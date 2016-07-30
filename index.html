@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>React App</title>
+
+
+  <link rel="stylesheet" type='text/css' href="src/css/style.css">
+
+<!-- Attach firebase mixin -->
+  <script src="https://cdn.firebase.com/libs/reactfire/1.0.0/reactfire.min.js"></script>
+
+
+<!-- REPLACE WITH FIREBASE CODE -->
+  <script src="https://www.gstatic.com/firebasejs/3.2.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDLTncgECWo3czfv2jdzQEacBfSTuV9Hg8",
+      authDomain: "app-sign-in-40420.firebaseapp.com",
+      databaseURL: "https://app-sign-in-40420.firebaseio.com",
+      storageBucket: "",
+    };
+    firebase.initializeApp(config);
+  </script>
+<!-- REPLACE WITH FIREBASE CODE -->
+
+
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <div class="container section" id="section1">
+      Wassup
+      <button id="left">1</button>
+      <button id="right">2</button>
+    </div>
+
+    <div class="container section" id="section2">
+      Wassup
+      <button id="left">1</button>
+      <button id="right">2</button>
+    </div>
+
+    <div class="container section" id="section3">
+      Wassup
+      <button id="left">1</button>
+      <button id="right">2</button>
+    </div>
+
+    <div class="container section" id="section4">
+      Wassup
+      <button id="left">1</button>
+      <button id="right">2</button>
+    </div>
+
+
+
+    <script type="text/babel">
+
+      class ReactClass = React.createClass({
+        mixins: [ReactFireMixin],
+        getInitialState(){
+          return {
+            visitors: [],
+          }
+        },
+        componentWillMount() {
+          // create/reference firebase db "visitors"
+          var ref = firebase.database().ref("visitors/");
+          // bind contents of db to state "visitors"
+          this.bindAsArray(ref, "visitors");
+        },
+        // add visitor to list of visitors
+        addVisitor(){
+          var newVisitor = this.refs.inputText.value;
+          this.firebaseRefs["visitors"].push({
+            visitor: newVisitor
+          });
+
+          // clear input text
+          this.refs.inputText.value = "";
+        },
+        handleKeyPress(e) {
+          if(e.key == "Enter"){
+            this.addVisitor();
+          }
+        },
+        deleteVisitor(object){ // function that deletes a visitor when you click it
+          console.log(object);
+          this.firebaseRefs["visitors"].child(object['.key']).remove(function(error) {
+            if (error) {
+              console.log(error);
+            }
+          });
+        },
+        render(){
+          return(
+            <div id="react-container">
+              <h1>visitors</h1>
+              {this.state.visitors.map(function(object, i){
+                return (
+                  <p key={i} onClick={()=>this.deleteVisitor(object)}>{object.visitor}</p>
+                )
+              }, this)}
+              <input
+                type="text"
+                placeholder="add your name"
+                ref="inputText"
+                onKeyPress={this.handleKeyPress}
+              />
+            </div>
+          )
+        }
+      })
+
+      ReactDOM.render(
+        <ReactClass/>,
+        document.getElementById('react-root')
+      );
+    </script>
+
+  </body>
+</html>
